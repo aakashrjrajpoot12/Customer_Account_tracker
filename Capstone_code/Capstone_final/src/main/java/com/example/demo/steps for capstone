@@ -1,0 +1,138 @@
+
+
+
+we are using 1to many
+one customer can have multiple account{fd account,current account,demat account} you can allow fund transfer between then that's the only business logic between them.
+
+
+
+specific Json format should be followed while posting data in postman API testing tool:
+
+
+
+
+
+step1:
+
+
+*post inside postman : http://localhost:8083/customer
+
+*here we are passing 1st customer details
+*specific Json format should be followed while posting data in postman API testing tool:
+ 
+ {   
+     "name":"sam",
+     "email":"xyz@wipro.com",
+     "accounts":[{"accno":101,"acctype":"curr","bal":10000},{"accno":102,"acctype":"demat","bal":30000} ]
+     
+ }
+ ............................................................................................................................................	
+    
+step2
+*here we are passing 2nd customer details    
+ {   
+     "name":"ram",
+     "email":"abc@wipro.com",
+     "accounts":[{"accno":103,"acctype":"sav","bal":20000},{"accno":104,"acctype":"fixdep","bal":40000} ]
+     
+ }  
+............................................................................................................................................	
+step3
+*for performing get operation inside postman:
+
+GET:    http://localhost:8083/customer/getall
+  
+............................................................................................................................................	
+step4:
+
+*for doing fund transfer from acc1 to acc2
+*perform  PUT operation see inside controller of Account
+
+* PUT:http://localhost:8083/FundTransfer
+ 
+
+
+         {
+         "acc1":101,
+         "acc2":102,
+         "amt":5000
+         
+        }
+        
+ * when you run>>> transaction succesfull     
+  ............................................................................................................................................	      
+ Step5
+ 
+ *GET:    http://localhost:8083/customer/getall
+ * you will get details updated after fund transfer
+ 
+............................................................................................................................................	 
+  step6:
+  you can check H2-Database   :http://localhost:8083/h2-console   
+        
+
+............................................................................................................................................	
+Step7
+If you wann to check each mapping of Account are working or not
+
+@GetMapping("/account/{id}")
+
+
+>>>>>>>>>GET:  http://localhost:8083/account/101
+
+O/p:  {
+    "accno": 101,
+    "acctype": "curr",
+    "bal": 10000.0
+}
+>>>>>>>>>GET:  http://localhost:8083/account/10143
+If we are providing wrong Id ,which is not present in our database
+o/p:  No data exist with this Id
+
+
+
+............................................................................................................................................		
+............................................................................................................................................	
+............................................................................................................................................	
+............................................................................................................................................	
+
+step10*    
+we had given condition inside Actutor that,   if (cus_repo.getAllCustomers().size() < 3)  ,which means that we have to give only 2 customer if more than 2 customer records then
+
+then if we use get mapping for Actutor 
+GET  :http://localhost:8888/actuator/health	
+
+
+{
+    "status": "DOWN",                           // as   if (cus_repo.getAllCustomers().size() < 3) ,condition false so status down
+    "components": {
+        "bank": {
+            "status": "DOWN"
+        },
+        "db": {
+            "status": "UP",
+            "details": {
+                "database": "H2",
+                "validationQuery": "isValid()"
+            }
+        },
+        "diskSpace": {
+            "status": "UP",
+            "details": {
+                "total": 494384795648,
+                "free": 405843206144,
+                "threshold": 10485760,
+                "exists": true
+            }
+        },
+        "ping": {
+            "status": "UP"
+        }
+    }
+}
+	
+............................................................................................................................................	
+	
+	
+	
+	 
